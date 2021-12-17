@@ -1,5 +1,6 @@
 package br.usp.each.typerace.server;
 
+import br.usp.each.typerace.game.Match;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
@@ -10,8 +11,12 @@ import java.util.Map;
 
 public class Server extends WebSocketServer {
 
+    //variaveis para conexao
     private final Map<String, WebSocket> connections;
     private final Map<String, Integer> usernames;
+
+    //variavel partida
+    private Match match;
 
     public Server(int port, Map<String, WebSocket> connections) {
         super(new InetSocketAddress(port));
@@ -74,5 +79,10 @@ public class Server extends WebSocketServer {
     public void onStart() {
         // TODO: Implementar
         System.out.println("Servidor iniciado na porta "+getPort());
+    }
+
+    private void createMatch()
+    {
+
     }
 }

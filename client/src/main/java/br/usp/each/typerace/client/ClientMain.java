@@ -2,13 +2,14 @@ package br.usp.each.typerace.client;
 
 import org.java_websocket.client.WebSocketClient;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.io.BufferedReader;
+import java.util.Scanner;
 
-public class ClientMain {
+public class ClientMain{
 
     private final WebSocketClient client;
 
@@ -21,8 +22,8 @@ public class ClientMain {
             System.out.println("Iniciando cliente: " + idCliente);
             // TODO: Implementar
             //
-            client.addHeader("idCliente", idCliente);
-            client.connect();
+            client.addHeader("idCliente", idCliente);//adiciona o idCliente à requisição
+            client.connect();//conecta ao servidor
     }
 
     public static void main(String[] args) {
@@ -35,22 +36,23 @@ public class ClientMain {
         String removeMe2 = "idCliente"; //mais próximo de um nickname
 
         try {
+            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
             WebSocketClient client = new Client(new URI(removeMe));
 
             ClientMain main = new ClientMain(client);
 
-            main.init(removeMe2);
+            System.out.println("Digite seu nome de usuario: ");
+            String nickName = br.readLine();
 
-            BufferedReader br = new BufferedReader (new InputStreamReader(System.in));
-            String aux = null;
+            main.init(nickName);
+
+            String wordBuffer = "";
+
             while(true)
             {
-                aux = br.readLine();
-                if(aux != null && !aux.equals(""))
-                {
-                    client.send(aux);
-                }
-                aux = "";
+                wordBuffer = br.readLine();
+                if(wordBuffer.length() > 0)//a palavra so e computada caso ela possua ao menos uma letra.
+                    client.send(wordBuffer);
             }
         } catch (URISyntaxException e) {
             e.printStackTrace();
