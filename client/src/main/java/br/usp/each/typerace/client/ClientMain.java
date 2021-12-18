@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Locale;
 import java.util.Scanner;
 
 public class ClientMain{
@@ -20,6 +21,7 @@ public class ClientMain{
     public void init(String idCliente) {
 
             System.out.println("Iniciando cliente: " + idCliente);
+            System.out.println("------------------------------------------------------------------------------------------\n");
             // TODO: Implementar
             //
             client.addHeader("idCliente", idCliente);//adiciona o idCliente à requisição
@@ -52,7 +54,14 @@ public class ClientMain{
             {
                 wordBuffer = br.readLine();
                 if(wordBuffer.length() > 0)//a palavra so e computada caso ela possua ao menos uma letra.
+                {
+                    if(wordBuffer.equalsIgnoreCase("quit")) {
+                        System.out.println("voce vai sair");
+                        client.close();
+                        break;
+                    }
                     client.send(wordBuffer);
+                }
             }
         } catch (URISyntaxException e) {
             e.printStackTrace();

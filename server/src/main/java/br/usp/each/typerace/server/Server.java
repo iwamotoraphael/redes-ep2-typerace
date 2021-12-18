@@ -17,16 +17,17 @@ public class Server extends WebSocketServer {
 
     //variavel partida
     private Match match;
+    private boolean inMatch;
 
     public Server(int port, Map<String, WebSocket> connections) {
         super(new InetSocketAddress(port));
         this.connections = connections;
         this.usernames = new HashMap<>();
+        inMatch = false;
     }
 
     @Override
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
-        // TODO: Implementar
         String idCliente = handshake.getFieldValue("idCliente");
         if(connections.containsKey(idCliente))//verifica se o idUsuario já foi utilizado
         {
@@ -41,48 +42,85 @@ public class Server extends WebSocketServer {
             usernames.put(idCliente, 1);
         }
         connections.put(idCliente, conn);
+
+        if(connections.size() == 1)
+            broadcast("O jogador "+idCliente+" entrou, existe "+connections.size()+" jogador conectado.");
+        else
+            broadcast("O jogador "+idCliente+" entrou, existem "+connections.size()+" jogadores conectados.");
+
         conn.send("Bem vindo ao jogo, "+idCliente+"!");
-        broadcast("O jogador "+idCliente+" entrou na sessao");
+        conn.send("Jogadores conectados: "+connections.keySet());
     }
 
     @Override
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
-        // TODO: Implementar
-        String nome = null;
-        for(Map.Entry<String, WebSocket> x : connections.entrySet())
-        {
-            if(x.getValue().equals(conn))
-            {
-                nome = x.getKey();
-                break;
-            }
-        }
+        String nome = getConnectionName(conn);
+        //busca o nome correspondente à conexão no map e o exclui
         if(nome != null) {
             connections.remove(nome);//passar o idUsuario através do close(message)
-            broadcast("O jogador " + nome + " saiu");
+
+            if(connections.size() == 1)
+                broadcast("O jogador "+nome+" saiu, existe "+connections.size()+" jogador conectado.");
+            else
+                broadcast("O jogador "+nome+" saiu, existem "+connections.size()+" jogadores conectados.");
         }
     }
 
     @Override
     public void onMessage(WebSocket conn, String message) {
-        // TODO: Implementar
-        System.out.println("conexao: "+conn+" "+message);
+
+        String player = getConnectionName(conn);
+        if(inMatch)//verifica se uma partida está em andamento
+        {
+            match.verifyPlayerWord(player, message);
+            if(match.checkGameOver())
+            {
+                inMatch = false;
+                conn.send("Fim de jogo");
+                //exibir placar
+                broadcast(match.getStats());
+            }
+            else {
+                conn.send(match.playersNextWord(player));
+            }
+        }
+        else
+        {
+            if(message.equalsIgnoreCase("start"))
+            {
+                createMatch();//inicia uma partida
+                broadcast(match.playersNextWord(player));
+            }
+        }
     }
 
     @Override
     public void onError(WebSocket conn, Exception ex) {
-        // TODO: Implementar
         System.out.println("Erro "+ex+" na conexao: "+conn.getRemoteSocketAddress());
     }
 
     @Override
     public void onStart() {
-        // TODO: Implementar
         System.out.println("Servidor iniciado na porta "+getPort());
     }
 
     private void createMatch()
     {
+        match = new Match();
+        match.init(connections.keySet());
+        this.inMatch = true;
+    }
 
+    private String getConnectionName(WebSocket conn)
+    {
+        for(Map.Entry<String, WebSocket> x : connections.entrySet())
+        {
+            if(x.getValue().equals(conn))
+            {
+                return x.getKey();
+            }
+        }
+
+        return null;
     }
 }

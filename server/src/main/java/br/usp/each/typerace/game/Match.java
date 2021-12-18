@@ -2,6 +2,7 @@ package br.usp.each.typerace.game;
 
 import java.io.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Match {
 
@@ -10,11 +11,14 @@ public class Match {
 
     private String[] matchWords;
 
+    private long start;
+    private long matchDuration;
+
     public Match(){
         playersCurrentIndexes = new HashMap<>();
         playersScores = new HashMap<>();
 
-        matchWords = new String[100];
+        matchWords = new String[50];
     }
 
     public void init(Set<String> names)
@@ -25,7 +29,7 @@ public class Match {
                 playersScores.put(name, 0);
             }
 
-            BufferedReader br = new BufferedReader(new FileReader(System.getProperty("user.dir")+"/server/src/main/resources/dicionario.txt"));
+            BufferedReader br = new BufferedReader(new FileReader(System.getProperty("user.dir")+"/src/main/resources/dicionario.txt"));
 
             String line = br.readLine();
             ArrayList<String> allWords = new ArrayList<>();
@@ -37,11 +41,13 @@ public class Match {
                 line = br.readLine();
             }
 
-            for(int i = 0;i<100;i++)
+            for(int i = 0;i<50;i++)
             {
                 String tempWord = allWords.get(r.nextInt(5000));
                 matchWords[i] = tempWord;
             }
+
+            start = System.currentTimeMillis();
         }
         catch(IOException e)
         {
@@ -49,18 +55,76 @@ public class Match {
         }
     }
 
-    public String[] getWords()
+    /*pega palavras*/
+    private String[] getWords()
     {
         return matchWords;
     }
 
-    public static void main(String[] args) {
-
-        Match m = new Match();
-        m.init(new HashSet<String>());
-
-        System.out.println("Palavras: ");
-        for(String word : m.getWords())
-            System.out.print(word+" ");
+    private boolean playerValid(String player)
+    {
+        int index = playersCurrentIndexes.get(player);
+        return index<matchWords.length;//retorna true se o index do jogador for válido
     }
+
+    public String playersNextWord(String player)
+    {
+        if(playerValid(player))
+        {
+            return(matchWords[playersCurrentIndexes.get(player)]);
+        }
+        else
+            return null;
+    }
+
+    public void verifyPlayerWord(String player, String word)
+    {
+        if(playerValid(player)){
+            int index = playersCurrentIndexes.get(player);
+            playersCurrentIndexes.replace(player, index + 1);
+            if(word.equalsIgnoreCase(matchWords[index]))
+                playersScores.replace(player, playersScores.get(player)+1);
+        }
+    }
+
+    public boolean checkGameOver()
+    {
+        boolean everybodyLost = true;
+        for(String player : playersScores.keySet())
+        {
+            if(playersCurrentIndexes.get(player) < 50)
+                everybodyLost = false;
+
+            if(playersScores.get(player) >= 20) {
+                matchDuration = System.currentTimeMillis()-start;
+                return true;
+            }
+        }
+
+        if(everybodyLost)
+        {
+            matchDuration = System.currentTimeMillis()-start;
+            return true;
+        }
+        return false;
+    }
+
+    public String getStats()
+    {
+        String stats = "";
+        long duration = matchDuration/1000;
+        long minutes = duration/60;
+        long seconds = duration%60;
+        List<Map.Entry<String, Integer>> list = playersScores.entrySet().stream().sorted((x, y)->{return -(x.getValue().compareTo(y.getValue()));}).collect(Collectors.toList());
+        int position = 1;
+        for(Map.Entry e : list)
+        {
+            stats += position+". "+e.getKey()+" - "+e.getValue()+" pontos.\n";
+            position++;
+        }
+        stats += "A partida durou incriveis "+minutes+" minutos e "+seconds+" segundos.\nParabens a todos os jogadores!";
+        return stats;
+    }
+
+
 }
