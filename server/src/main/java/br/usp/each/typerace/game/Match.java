@@ -109,6 +109,12 @@ public class Match {
         return false;
     }
 
+    public void removePlayer(String player)
+    {
+        if(playersCurrentIndexes.containsKey(player))
+            playersCurrentIndexes.replace(player,50);
+    }
+
     public String getStats()
     {
         String stats = "";

@@ -58,6 +58,8 @@ public class Server extends WebSocketServer {
         //busca o nome correspondente à conexão no map e o exclui
         if(nome != null) {
             connections.remove(nome);//passar o idUsuario através do close(message)
+            if(inMatch)
+                match.removePlayer(nome);
 
             if(connections.size() == 1)
                 broadcast("O jogador "+nome+" saiu, existe "+connections.size()+" jogador conectado.");

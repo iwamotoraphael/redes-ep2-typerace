@@ -56,7 +56,6 @@ public class ClientMain{
                 if(wordBuffer.length() > 0)//a palavra so e computada caso ela possua ao menos uma letra.
                 {
                     if(wordBuffer.equalsIgnoreCase("quit")) {
-                        System.out.println("voce vai sair");
                         client.close();
                         break;
                     }
