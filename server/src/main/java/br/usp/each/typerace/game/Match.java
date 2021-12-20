@@ -6,14 +6,16 @@ import java.util.stream.Collectors;
 
 public class Match {
 
-    private Map<String, Integer> playersCurrentIndexes;
-    private Map<String, Integer> playersScores;
+    private Map<String, Integer> playersCurrentIndexes; //Map que armazena a posição de cada jogador no vetor de palavras
+    private Map<String, Integer> playersScores;//Map que armazena a pontuação de cada jogador
 
-    private String[] matchWords;
+    private String[] matchWords;//Vetor que armazena as palavras a serem digitadas na partida
 
+    //Variáveis que armazenam o ínicio e a duração da partidas
     private long start;
     private long matchDuration;
 
+    /*Construtor padrão que inicializa as variáveis globais*/
     public Match(){
         playersCurrentIndexes = new HashMap<>();
         playersScores = new HashMap<>();
@@ -21,6 +23,7 @@ public class Match {
         matchWords = new String[50];
     }
 
+    /*Método que inicializa a partida, sorteando as palavras, insere os jogadores nas variáveis globais e a hora do início da partida*/
     public void init(Set<String> names)
     {
         try {
@@ -55,18 +58,20 @@ public class Match {
         }
     }
 
-    /*pega palavras*/
+    /*retorna as palavras utilizadas na partida*/
     private String[] getWords()
     {
         return matchWords;
     }
 
+    /*Verifica se o index atual de um jogador é válido*/
     private boolean playerValid(String player)
     {
         int index = playersCurrentIndexes.get(player);
-        return index<matchWords.length;//retorna true se o index do jogador for válido
+        return index<matchWords.length;
     }
 
+    /*Retorna a palavra que um jogador deve digitar*/
     public String playersNextWord(String player)
     {
         if(playerValid(player))
@@ -77,6 +82,7 @@ public class Match {
             return null;
     }
 
+    /*Verifica se um jogador escreveu a palavra correta*/
     public void verifyPlayerWord(String player, String word)
     {
         if(playerValid(player)){
@@ -87,6 +93,7 @@ public class Match {
         }
     }
 
+    /*Verifica se a partida alcançou uma das condições de término*/
     public boolean checkGameOver()
     {
         boolean everybodyLost = true;
@@ -109,12 +116,14 @@ public class Match {
         return false;
     }
 
+    /*Considera que o jogador errou todas as palavras restantes*/
     public void removePlayer(String player)
     {
         if(playersCurrentIndexes.containsKey(player))
             playersCurrentIndexes.replace(player,50);
     }
 
+    /*Retorna as estatísticas da partida*/
     public String getStats()
     {
         String stats = "";

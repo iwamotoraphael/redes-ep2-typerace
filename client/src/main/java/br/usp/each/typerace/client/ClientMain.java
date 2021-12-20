@@ -7,8 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Locale;
-import java.util.Scanner;
+
 
 public class ClientMain{
 
@@ -18,28 +17,21 @@ public class ClientMain{
         this.client = client;
     }
 
+    /*Inicializa a conexão do client*/
     public void init(String idCliente) {
 
             System.out.println("Iniciando cliente: " + idCliente);
             System.out.println("------------------------------------------------------------------------------------------\n");
-            // TODO: Implementar
-            //
             client.addHeader("idCliente", idCliente);//adiciona o idCliente à requisição
             client.connect();//conecta ao servidor
     }
 
     public static void main(String[] args) {
-        /*
-           FIXME: Remover essas strings fixas
-           Como podemos fazer para que o cliente receba um parâmetro indicando a qual servidor
-           ele deve se conectar e o seu ID?
-        */
-        String removeMe = "ws://localhost:8080";
-        String removeMe2 = "idCliente"; //mais próximo de um nickname
+        String serverURI = "ws://localhost:8080";
 
         try {
             BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-            WebSocketClient client = new Client(new URI(removeMe));
+            WebSocketClient client = new Client(new URI(serverURI));
 
             ClientMain main = new ClientMain(client);
 
@@ -55,6 +47,7 @@ public class ClientMain{
                 wordBuffer = br.readLine();
                 if(wordBuffer.length() > 0)//a palavra so e computada caso ela possua ao menos uma letra.
                 {
+                    //fecha a conexão através do comando quit, independente de como foi escrito
                     if(wordBuffer.equalsIgnoreCase("quit")) {
                         client.close();
                         break;

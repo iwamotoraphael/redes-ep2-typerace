@@ -57,7 +57,7 @@ public class Server extends WebSocketServer {
         String nome = getConnectionName(conn);
         //busca o nome correspondente à conexão no map e o exclui
         if(nome != null) {
-            connections.remove(nome);//passar o idUsuario através do close(message)
+            connections.remove(nome);
             if(inMatch)
                 match.removePlayer(nome);
 
@@ -106,6 +106,7 @@ public class Server extends WebSocketServer {
         System.out.println("Servidor iniciado na porta "+getPort());
     }
 
+    //inicializa a partida
     private void createMatch()
     {
         match = new Match();
@@ -113,6 +114,7 @@ public class Server extends WebSocketServer {
         this.inMatch = true;
     }
 
+    /*Retorna o nome correspondente à um WebSocket*/
     private String getConnectionName(WebSocket conn)
     {
         for(Map.Entry<String, WebSocket> x : connections.entrySet())
@@ -122,7 +124,6 @@ public class Server extends WebSocketServer {
                 return x.getKey();
             }
         }
-
         return null;
     }
 }
