@@ -125,7 +125,8 @@ public class Match {
         int position = 1;
         for(Map.Entry e : list)
         {
-            stats += position+". "+e.getKey()+" - "+e.getValue()+" pontos.\n";
+            int erros = playersCurrentIndexes.get(e.getKey()) - (int) e.getValue();
+            stats += position+". "+e.getKey()+" - "+e.getValue()+" pontos e "+erros+" erros.\n";
             position++;
         }
         stats += "A partida durou incriveis "+minutes+" minutos e "+seconds+" segundos.\nParabens a todos os jogadores!";
