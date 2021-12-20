@@ -30,10 +30,10 @@ Para rodar um cliente com o terminal mais limpo (recomendado)
 ```
 
 ## Regras
-* Ao iniciar um client é solicitado um id para o usuário. Caso o id escolhido já esteja sendo utilizado, o usuário é registrado com o id desejado + um número, incrementado sequencialmente.
-* Uma mensagem vazia não é enviada para o servidor.
-* Durante a partida, as palavras são enviadas uma a uma para os clientes. Cada palavra é enviada ao servidor via tecla enter, e novas palavras chegam no cliente até que o jogo termine. 
-* O usuário só precisa digitar as palavras corretamente, letras maiúsculas e minúsculas são desconsideradas.
+* No início, é solicitado do usuário um id por meio do client. Caso o id escolhido já esteja sendo utilizado, o usuário é registrado com o id desejado + um número, incrementado sequencialmente.
+* Durante a partida, as palavras são enviadas uma a uma para os clientes. Cada palavra é enviada ao servidor via tecla Enter, e novas palavras chegam no cliente até que o jogo termine. 
+* O usuário só precisa digitar as palavras corretamente. Letras maiúsculas e minúsculas são desconsideradas.
+* Uma mensagem vazia nunca é enviada para o servidor, nem antes, nem durante uma partida.
 * O jogo roda localmente na porta 8080.
 * Cada partida possui 50 palavras, vence o jogo aquele que escrever corretamente 20 palavras primeiro ou aquele que acertou o maior número de palavras caso ninguém acerte 20. 
 * Caso um jogador seja desconectado durante uma partida, a aplicação considera que ele errou todas as palavras restantes.
